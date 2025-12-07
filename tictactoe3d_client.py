@@ -3,8 +3,9 @@ from tkinter import *
 from tkinter import messagebox
 import platform
 
+
 # --- CONFIGURACIÓN ---
-SERVER_URL = "http://192.168.0.9:3000"  # Asegúrate de que esta IP sea correcta
+SERVER_URL = "https://servidor-tictactoe3d.onrender.com"
 
 sio = socketio.Client()
 

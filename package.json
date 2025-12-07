@@ -1,16 +1,18 @@
+
 {
-  "name": "servidor-tictactoe",
+  "name": "servidor-tictactoe3d",
   "version": "1.0.0",
-  "description": "Servidor para juego 3D",
+  "description": "Servidor Node.js con Socket.IO para TicTacToe 3D (WAN)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "socket.io": "^4.7.2"
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18"
   }
 }
