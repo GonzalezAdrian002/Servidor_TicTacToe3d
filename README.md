@@ -1,110 +1,81 @@
-@echo off
-setlocal ENABLEDELAYEDEXPANSION
+# Servidor_TicTacToe3D
 
-REM =============================
-REM  Build script for TicTacToe3D client (.exe)
-REM  Usage:
-REM    build.bat [--console] [--icon icon.ico] [--name TicTacToe3D] [--serverURL https://your-url]
-REM  Notes:
-REM    - Run this script in the same folder where tictactoe3d_client.py lives.
-REM    - If --serverURL is provided, it will patch SERVER_URL in tictactoe3d_client.py during the build.
-REM =============================
+Servidor **Node.js + Socket.IO** para un juego de **TicTacToe 3D (4×4×4)** que funciona por **WAN** (Internet) desplegado en **Render**.  
+Incluye un cliente de ejemplo en **Python (Tkinter + python-socketio)** para conectarse desde cualquier equipo y demostrar que **no depende de la red WiFi local**.
 
-REM Default values
-set APP_NAME=TicTacToe3D
-set ICON_ARG=
-set CONSOLE_ARG=--noconsole
-set SERVER_URL=
+> ✅ Este proyecto cumple con la condición de evaluación del 100%: **comunicación por WAN mediante un servidor en la nube**, funcionando al 100% sin necesitar el WiFi local.
 
-REM Parse arguments
-:parse
-if "%~1"=="" goto after_parse
-if /I "%~1"=="--console" (
-  set CONSOLE_ARG=--console
-  shift
-  goto parse
-)
-if /I "%~1"=="--icon" (
-  set ICON_PATH=%~2
-  if not exist "%ICON_PATH%" (
-    echo [WARN] Icon file not found: %ICON_PATH%
-  ) else (
-    set ICON_ARG=--icon "%ICON_PATH%"
-  )
-  shift
-  shift
-  goto parse
-)
-if /I "%~1"=="--name" (
-  set APP_NAME=%~2
-  shift
-  shift
-  goto parse
-)
-if /I "%~1"=="--serverURL" (
-  set SERVER_URL=%~2
-  shift
-  shift
-  goto parse
-)
-shift
-goto parse
+---
 
-after_parse:
+## ✨ Características
+- Tablero 3D de 4×4×4 (64 casillas) con detección de todas las líneas ganadoras posibles.
+- Gestión de **turnos**, **reinicio** y **desconexión** de jugadores.
+- **Socket.IO** para comunicación en tiempo real entre cliente y servidor.
+- **CORS** abierto para permitir clientes externos.
+- Health-check HTTP en `GET /` para verificar que el servicio está activo.
+- Cliente Python (Tkinter) visual con botones y resaltado de la línea ganadora.
 
-REM Check Python
-where python >nul 2>&1
-if errorlevel 1 (
-  echo [ERROR] Python not found in PATH. Install Python from https://www.python.org/ and retry.
-  goto end
-)
+---
 
-REM Create venv
-if not exist .venv (
-  echo [INFO] Creating virtual environment .venv
-  python -m venv .venv
-)
+## 🌐 URL pública del servidor (Render)
+```
+https://servidor-tictactoe3d.onrender.com
+```
+Abre esta URL en el navegador para comprobar que el servidor está activo.
 
-REM Activate venv
-call .venv\Scripts\activate
+---
 
-REM Upgrade pip
-python -m pip install --upgrade pip
+## 🗂 Estructura del repositorio
+```
+.
+├── server.js                # Servidor Node.js con Socket.IO
+├── package.json             # Dependencias y scripts (npm start)
+├── README.md                # Instrucciones completas
+├── build.bat                # Script para generar el .exe del cliente
+└── tictactoe3d_client.py    # Cliente Python
+```
 
-REM Install deps
-if exist requirements.txt (
-  echo [INFO] Installing from requirements.txt
-  pip install -r requirements.txt
-) else (
-  echo [INFO] Installing required packages
-  pip install "python-socketio[client]" pyinstaller
-)
+---
 
-REM Optionally patch SERVER_URL in the client
-if not "%SERVER_URL%"=="" (
-  if exist tictactoe3d_client.py (
-    echo [INFO] Patching SERVER_URL to %SERVER_URL%
-    powershell -Command "(Get-Content 'tictactoe3d_client.py') -replace 'SERVER_URL\s*=\s*\"[^\"]*\"', 'SERVER_URL = \"%SERVER_URL%\"' | Set-Content 'tictactoe3d_client.py'"
-  ) else (
-    echo [WARN] tictactoe3d_client.py not found; skipping URL patch.
-  )
-)
+## 🚀 Cómo probar el proyecto (para el profesor)
+1. **Servidor en la nube**: Ya está desplegado en Render. No necesita instalar Node ni correr nada localmente.
+2. **Cliente**:
+   - Opción A: Usa el `.exe` que se entrega (más fácil).
+   - Opción B: Genera el `.exe` con `build.bat`:
+     ```bat
+     build.bat --serverURL https://servidor-tictactoe3d.onrender.com
+     ```
+     El ejecutable aparecerá en `dist/TicTacToe3D.exe`.
+3. Ejecuta el `.exe` en **dos PCs diferentes** (o dos instancias) para jugar.
+4. Para demostrar WAN, usa **dos redes distintas** (por ejemplo, una PC en WiFi y otra en datos móviles).
 
-REM Build
-if not exist tictactoe3d_client.py (
-  echo [ERROR] tictactoe3d_client.py not found in current directory.
-  goto end
-)
+---
 
-echo [INFO] Building %APP_NAME%.exe
-pyinstaller --onefile %CONSOLE_ARG% %ICON_ARG% --name "%APP_NAME%" tictactoe3d_client.py
+## 🖥 Crear ejecutable (.exe) del cliente Python
+Para facilitar la distribución:
+- Requisitos: Windows 10/11, Python 3.9+.
+- Pasos:
+  1. Coloca `tictactoe3d_client.py` y `build.bat` en la misma carpeta.
+  2. Ejecuta:
+     ```bat
+     build.bat --serverURL https://servidor-tictactoe3d.onrender.com
+     ```
+  3. El `.exe` se genera en `dist/`.
 
-if exist dist\%APP_NAME%.exe (
-  echo [SUCCESS] Build complete: dist\%APP_NAME%.exe
-) else (
-  echo [ERROR] Build failed. Check the output above for errors.
-)
+Opciones:
+- `--console`: muestra consola para depuración.
+- `--icon icon.ico`: agrega ícono.
+- `--name MiTicTacToe3D`: cambia nombre del ejecutable.
 
-pause
-:end
-endlocal
+---
+
+## ✅ Cómo demostrar el 100%
+- Mostrar la URL pública del servidor.
+- Ejecutar el cliente en **dos redes distintas**.
+- Jugar y comprobar que funciona sin depender de WiFi local.
+
+---
+
+## 👤 Autor
+**Adrián González**  
+Proyecto: **Servidor_TicTacToe3D** (Node.js + Socket.IO) + Cliente Python
